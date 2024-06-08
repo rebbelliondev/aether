@@ -18,8 +18,10 @@ endef
 # It is suggested to use a custom built cross toolchain to build a kernel.
 # We are using the standard "cc" here, it may work by using
 # the host system's toolchain, but this is not guaranteed.
-override DEFAULT_KCC := cc
+override DEFAULT_KCC := gcc
 $(eval $(call DEFAULT_VAR,KCC,$(DEFAULT_KCC)))
+
+KCPP = g++
 
 # Same thing for "ld" (the linker).
 override DEFAULT_KLD := ld
@@ -45,7 +47,6 @@ $(eval $(call DEFAULT_VAR,KLDFLAGS,$(DEFAULT_KLDFLAGS)))
 override KCFLAGS += \
     -Wall \
     -Wextra \
-    -std=gnu11 \
     -ffreestanding \
     -fno-stack-protector \
     -fno-stack-check \
@@ -53,27 +54,36 @@ override KCFLAGS += \
     -fPIE \
     -m64 \
     -march=x86-64 \
+    -mabi=sysv \
     -mno-80387 \
     -mno-mmx \
     -mno-sse \
     -mno-sse2 \
-    -mno-red-zone
+    -mno-red-zone \
+    -g \
+    -Wno-write-strings  \
+    -I. \
+    -Iinclude \
+    -Isrc/
 
 # Internal C preprocessor flags that should not be changed by the user.
 override KCPPFLAGS := \
-    -I src \
-    $(KCPPFLAGS) \
+    -I. \
+    $(CPPFLAGS) \
     -MMD \
-    -MP
+    -MP \
+    -g
 
 # Internal linker flags that should not be changed by the user.
 override KLDFLAGS += \
     -m elf_x86_64 \
     -nostdlib \
-    -pie \
+    -static \
+    --no-dynamic-linker \
     -z text \
     -z max-page-size=0x1000 \
-    -T linker.ld
+    -T linker.ld \
+    -g
 
 # Internal nasm flags that should not be changed by the user.
 override KNASMFLAGS += \
@@ -83,46 +93,51 @@ override KNASMFLAGS += \
 # Use "find" to glob all *.c, *.S, and *.asm files in the tree and obtain the
 # object and header dependency file names.
 override CFILES := $(shell cd src && find -L * -type f -name '*.c')
+override CPPFILES := $(shell cd src && find -L * -type f -name '*.cpp')
 override ASFILES := $(shell cd src && find -L * -type f -name '*.S')
 override NASMFILES := $(shell cd src && find -L * -type f -name '*.asm')
-override OBJ := $(addprefix obj/,$(CFILES:.c=.c.o) $(ASFILES:.S=.S.o) $(NASMFILES:.asm=.asm.o))
-override HEADER_DEPS := $(addprefix obj/,$(CFILES:.c=.c.d) $(ASFILES:.S=.S.d))
+override OBJ := $(addprefix obj/,$(CFILES:.c=.c.o) $(CPPFILES:.cpp=.cpp.o) $(ASFILES:.S=.S.o) $(NASMFILES:.asm=.asm.o))
+override HEADER_DEPS := $(addprefix obj/,$(CFILES:.c=.c.d) $(CFILES:.cpp=.cpp.d) $(ASFILES:.S=.S.d))
 
 # Default target.
 .PHONY: all
 all: bin/$(KERNEL)
 
 src/limine.h:
-	curl -Lo $@ https://github.com/limine-bootloader/limine/raw/trunk/limine.h
+	@curl -Lo $@ https://github.com/limine-bootloader/limine/raw/trunk/limine.h
 
 # Link rules for the final kernel executable.
 bin/$(KERNEL): GNUmakefile linker.ld $(OBJ)
-	mkdir -p "$$(dirname $@)"
-	$(KLD) $(OBJ) $(KLDFLAGS) -o $@
+	@mkdir -p "$$(dirname $@)"
+	@$(KLD) $(OBJ) $(KLDFLAGS) -o $@
 
 # Include header dependencies.
 -include $(HEADER_DEPS)
 
 # Compilation rules for *.c files.
-obj/%.c.o: src/%.c GNUmakefile src/limine.h
-	mkdir -p "$$(dirname $@)"
-	$(KCC) $(KCFLAGS) $(KCPPFLAGS) -c $< -o $@
+obj/%.c.o: src/%.c  GNUmakefile limine.h
+	@mkdir -p "$$(dirname $@)"
+	@$(KCC) $(KCFLAGS) -c $< -o $@
+
+obj/%.cpp.o: src/%.cpp  GNUmakefile
+	@mkdir -p "$$(dirname $@)"
+	@$(KCPP) $(KCPPFLAGS) -c $< -o $@  -std=c++11
 
 # Compilation rules for *.S files.
 obj/%.S.o: src/%.S GNUmakefile
-	mkdir -p "$$(dirname $@)"
-	$(KCC) $(KCFLAGS) $(KCPPFLAGS) -c $< -o $@
+	@mkdir -p "$$(dirname $@)"
+	@$(KCC) $(KCFLAGS) $(KCPPFLAGS) -c $< -o $@
 
 # Compilation rules for *.asm (nasm) files.
 obj/%.asm.o: src/%.asm GNUmakefile
-	mkdir -p "$$(dirname $@)"
-	nasm $(KNASMFLAGS) $< -o $@
+	@mkdir -p "$$(dirname $@)"
+	@nasm $(KNASMFLAGS) $< -o $@
 
 # Remove object files and the final executable.
 .PHONY: clean
 clean:
-	rm -rf bin obj
+	@rm -rf bin obj
 
 .PHONY: distclean
 distclean: clean
-	rm -f src/limine.h
+	@rm -f src/limine.h
