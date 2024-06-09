@@ -1,10 +1,8 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
-#include <def.h>
-#include <drivers/driver.hpp>
 
-class ioDriver : Driver {
+class ioDriver {
 public:
     ioDriver();
 

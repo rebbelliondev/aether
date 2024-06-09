@@ -1,4 +1,4 @@
-#include "../libc/string.c"
+#include "libc/string.h"
 #include "idt.h"
 
 struct idtentry idt[256];
@@ -15,10 +15,10 @@ void set_idt_entry(int n, uint32_t handler) {
 }
 
 void load_idt(void) {
-    idtp.limit = (sizeof(struct idtentry) * 256) - 1;
+    idtp.limit = sizeof(idt) - 1;
     idtp.base = (uint64_t)&idt;
-    memset(&idt, 0, sizeof(struct idtentry) * 256);
     // Need to add isr common handler to put entries through
     
-    __asm__ __volatile__("lidt(%0)" : : "r" (&idtp));
+    asm volatile("lidt (%0)" : : "r" (&idtp));
+    asm volatile("sti");
 }

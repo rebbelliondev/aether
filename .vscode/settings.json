@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.s": "nasm",
+        "limine.h": "c",
+        "string.h": "c"
+    }
+}

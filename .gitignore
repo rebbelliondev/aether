@@ -1,4 +1,6 @@
 /limine
 /ovmf
+*.o
+*.d
 *.iso
 *.hdd
