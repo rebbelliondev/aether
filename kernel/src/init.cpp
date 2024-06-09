@@ -1,8 +1,5 @@
 #include <Logger.hpp>
-
-extern "C" { 
-    #include "interrupts/idt.h"
-}
+#include "interrupts/idt.hpp"
 
 extern "C" {
     void init() {

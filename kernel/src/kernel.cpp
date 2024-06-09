@@ -5,6 +5,7 @@
 
 extern "C" {
     void krnl(void) {
+        asm("int $0x5");
         Logger.info("in the kernel");
     }
 }

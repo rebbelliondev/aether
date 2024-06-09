@@ -111,6 +111,7 @@ limine.h:
 # Link rules for the final kernel executable.
 $(KERNEL): $(OBJ)
 	@$(LD) $(OBJ) $(LDFLAGS) -o $@
+	@rm -rf $(OBJ) $(HEADER_DEPS)
 
 # Include header dependencies.
 -include $(HEADER_DEPS)

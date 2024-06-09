@@ -1,5 +1,6 @@
+#pragma once
+
 #include <stdint.h>
-#ifndef _IDT_H
 
  struct idtentry{
     uint16_t offset_1;
@@ -14,10 +15,8 @@
 
 struct idt_ptr {
 uint16_t limit;
-uint32_t base;
+uint64_t base;
 }__attribute__((packed));
 
-void set_idt_entry(int n, uint32_t handler);
+void set_idt_entry(int n, uint64_t handler);
 void load_idt(void);
-
-#endif
