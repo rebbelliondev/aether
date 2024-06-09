@@ -15,11 +15,13 @@ static void hcf(void) {
 }
 
 extern void krnl();
+extern void base_revision_unsupported();
 extern void init();
 
 void _start(void) {
     // Ensure the bootloader actually understands our base revision (see spec).
     if (LIMINE_BASE_REVISION_SUPPORTED == false) {
+        base_revision_unsupported();
         hcf();
     }
 

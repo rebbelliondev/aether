@@ -4,8 +4,6 @@
 struct idtentry idt[256];
 struct idt_ptr idtp;
 
-extern "C" void isr();
-
 void set_idt_entry(int n, uint64_t handler) {
     idt[n].offset_1 = handler & 0xFFFF;
     idt[n].selector = 0x08;

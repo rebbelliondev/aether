@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
- struct idtentry{
+ struct idtentry {
     uint16_t offset_1;
     uint16_t selector;
     uint8_t ist;
@@ -14,8 +14,8 @@
 
 
 struct idt_ptr {
-uint16_t limit;
-uint64_t base;
+    uint16_t limit;
+    uint64_t base;
 }__attribute__((packed));
 
 void set_idt_entry(int n, uint64_t handler);

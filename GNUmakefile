@@ -25,11 +25,19 @@ all-hdd: $(IMAGE_NAME).hdd
 
 .PHONY: run
 run: $(IMAGE_NAME).iso
-	@qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d  -debugcon stdio
+	@qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d  -debugcon stdio -no-reboot
+
+.PHONY: debug
+debug: $(IMAGE_NAME).iso
+	@qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d -debugcon stdio -s -S
+
+.PHONY: run-log
+run-log: $(IMAGE_NAME).iso
+	@qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d -debugcon stdio -d int -D log -no-reboot
 
 .PHONY: run-uefi
 run-uefi: ovmf $(IMAGE_NAME).iso
-	@qemu-system-x86_64 -M q35 -m 2G -bios ovmf/OVMF.fd -cdrom $(IMAGE_NAME).iso -boot d  -debugcon stdio
+	@qemu-system-x86_64 -M q35 -m 2G -bios ovmf/OVMF.fd -cdrom $(IMAGE_NAME).iso -boot d  -debugcon stdio -no-reboot
 
 .PHONY: run-hdd
 run-hdd: $(IMAGE_NAME).hdd
@@ -43,60 +51,50 @@ ovmf:
 	@mkdir -p ovmf
 	@cd ovmf && curl -Lo OVMF.fd https://retrage.github.io/edk2-nightly/bin/RELEASEX64_OVMF.fd
 
-limine:
-	@git clone https://github.com/limine-bootloader/limine.git --branch=v5.x-branch-binary --depth=1
-	@$(MAKE) -C limine CC="$(HOST_CC)"
+ovmf:
+	@mkdir -p ovmf
+	@cd ovmf && curl -Lo OVMF.fd https://retrage.github.io/edk2-nightly/bin/RELEASEX64_OVMF.fd
+
+limine/limine:
+	@rm -rf limine
+	@git clone https://github.com/limine-bootloader/limine.git --branch=v7.x-binary --depth=1
+	@$(MAKE) -C limine
 
 .PHONY: kernel
 kernel:
 	@$(MAKE) -C kernel
 
-$(IMAGE_NAME).iso: limine kernel
-	@rm -rf iso_root
-	@mkdir -p iso_root
-	@cp -v kernel/kernel.elf \
-		limine.cfg limine/limine-bios.sys limine/limine-bios-cd.bin limine/limine-uefi-cd.bin iso_root/
-	@mkdir -p iso_root/EFI/BOOT
-	@cp -v limine/BOOTX64.EFI iso_root/EFI/BOOT/
-	@cp -v limine/BOOTIA32.EFI iso_root/EFI/BOOT/
-	@xorriso -as mkisofs -b limine-bios-cd.bin \
+$(IMAGE_NAME).iso: limine/limine kernel
+	@mkdir -p disk/boot
+	@cp -v kernel/kernel.elf disk/
+	@rm kernel/kernel.elf
+	@mkdir -p disk/boot/limine
+	@cp -v limine.cfg limine/limine-bios.sys limine/limine-bios-cd.bin limine/limine-uefi-cd.bin disk/boot/limine/
+	@mkdir -p disk/EFI/BOOT
+	@cp -v limine/BOOTX64.EFI disk/EFI/BOOT/
+	@cp -v limine/BOOTIA32.EFI disk/EFI/BOOT/
+	@xorriso -as mkisofs -b boot/limine/limine-bios-cd.bin \
 		-no-emul-boot -boot-load-size 4 -boot-info-table \
-		--efi-boot limine-uefi-cd.bin \
+		--efi-boot boot/limine/limine-uefi-cd.bin \
 		-efi-boot-part --efi-boot-image --protective-msdos-label \
-		iso_root -o $(IMAGE_NAME).iso
+		disk -o $(IMAGE_NAME).iso
 	@./limine/limine bios-install $(IMAGE_NAME).iso
-	@rm -rf iso_root
 
-$(IMAGE_NAME).hdd: limine kernel
+$(IMAGE_NAME).hdd: limine/limine kernel
 	@rm -f $(IMAGE_NAME).hdd
 	@dd if=/dev/zero bs=1M count=0 seek=64 of=$(IMAGE_NAME).hdd
-	@parted -s $(IMAGE_NAME).hdd mklabel gpt
-	@parted -s $(IMAGE_NAME).hdd mkpart ESP fat32 2048s 100%
-	@parted -s $(IMAGE_NAME).hdd set 1 esp on
+	@sgdisk $(IMAGE_NAME).hdd -n 1:2048 -t 1:ef00
 	@./limine/limine bios-install $(IMAGE_NAME).hdd
-	@sudo losetup -Pf --show $(IMAGE_NAME).hdd >loopback_dev
-	@sudo mkfs.fat -F 32 `cat loopback_dev`p1
-	@mkdir -p img_mount
-	@sudo mount `cat loopback_dev`p1 img_mount
-	@sudo mkdir -p img_mount/EFI/BOOT
-	@sudo cp -v kernel/kernel.elf limine.cfg limine/limine-bios.sys img_mount/
-	@sudo cp -v limine/BOOTX64.EFI img_mount/EFI/BOOT/
-	@sudo cp -v limine/BOOTIA32.EFI img_mount/EFI/BOOT/
-	@sync
-	@sudo umount img_mount
-	@sudo losetup -d `cat loopback_dev`
-	@rm -rf loopback_dev img_mount
-
-install:
-	@apt update -y
-	@apt upgrade -y
-	@apt install make nasm gcc  -y
-	@apt install qemu-system qemu -y
-	@apt install xorriso -y
+	@mformat -i $(IMAGE_NAME).hdd@@1M
+	@mmd -i $(IMAGE_NAME).hdd@@1M ::/EFI ::/EFI/BOOT ::/boot ::/boot/limine
+	@mcopy -i $(IMAGE_NAME).hdd@@1M kernel/bin/kernel ::/boot
+	@mcopy -i $(IMAGE_NAME).hdd@@1M limine.cfg limine/limine-bios.sys ::/boot/limine
+	@mcopy -i $(IMAGE_NAME).hdd@@1M limine/BOOTX64.EFI ::/EFI/BOOT
+	@mcopy -i $(IMAGE_NAME).hdd@@1M limine/BOOTIA32.EFI ::/EFI/BOOT
 
 .PHONY: clean
 clean:
-	@rm -rf iso_root $(IMAGE_NAME).iso $(IMAGE_NAME).hdd
+	@rm -rf disk $(IMAGE_NAME).iso $(IMAGE_NAME).hdd
 	@$(MAKE) -C kernel clean
 
 .PHONY: distclean
