@@ -20,7 +20,7 @@ const char* exceptions[32] = {
     "Invalid Opcode",
     "Device Not Available",
     "Double Fault",
-    "Coprocssor Segment Overrunt",
+    "Coprocssor Segment Overrun",
     "Invalid TSS",
     "Segment Not Present",
     "Stack-Segment Fault",
@@ -48,6 +48,11 @@ extern "C" {
     uint64_t g_ints[256];
 
     __attribute__((interrupt)) void intHandler(struct interrupt_frame* frame) {
-        Logger.info("Interrupt");
+        if (frame == nullptr) {
+            Logger.error("Null interrupt frame");
+            return;
+        } else {
+            Logger.info("Interrupt");
     }
+}
 }
