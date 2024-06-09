@@ -16,12 +16,14 @@ void set_idt_entry(int n, uint64_t handler) {
     idt[n].zero = 0;
 }
 
+extern "C" void intHandler();
+
 void load_idt(void) {
     idtp.limit = sizeof(idt) - 1;
     idtp.base = (uint64_t)&idt;
     // Need to add isr common handler to put entries through
     for (int i = 0; i < 256; i++) {
-        set_idt_entry(i, (uint64_t)isr);
+        set_idt_entry(i, (uint64_t)intHandler);
     }
     
     asm volatile("lidt (%0)" : : "r" (&idtp));
