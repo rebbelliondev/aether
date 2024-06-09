@@ -19,4 +19,7 @@ struct idt_ptr {
 }__attribute__((packed));
 
 void set_idt_entry(int n, uint64_t handler);
+
+void register_handler(int n, uint64_t adr);
+
 void load_idt(void);

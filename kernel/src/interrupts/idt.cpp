@@ -1,5 +1,6 @@
 #include "libc/string.h"
 #include "idt.hpp"
+#include "pic8259.hpp"
 
 struct idtentry idt[256];
 struct idt_ptr idtp;
@@ -14,6 +15,12 @@ void set_idt_entry(int n, uint64_t handler) {
     idt[n].zero = 0;
 }
 
+extern "C" uint64_t g_ints[256];
+
+void registerHandler(int n, uint64_t adr) {
+    g_ints[n] = adr;
+}
+
 extern "C" void intHandler();
 
 void load_idt(void) {
@@ -24,6 +31,8 @@ void load_idt(void) {
         set_idt_entry(i, (uint64_t)intHandler);
     }
     
+    pic.remap(32, 32 + 7);
+
     asm volatile("lidt (%0)" : : "r" (&idtp));
     asm volatile("sti");
 }

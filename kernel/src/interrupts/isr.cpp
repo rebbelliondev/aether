@@ -45,6 +45,8 @@ const char* exceptions[32] = {
 };
 
 extern "C" {
+    uint64_t g_ints[256];
+
     __attribute__((interrupt)) void intHandler(struct interrupt_frame* frame) {
         Logger.info("Interrupt");
     }
