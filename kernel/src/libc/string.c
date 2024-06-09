@@ -1,54 +1,119 @@
-#include <stdint.h>
-#include <stddef.h>
-#include <stdbool.h>
+#include "libc/string.h"
 
-void *memcpy(void *dest, const void *src, size_t n) {
-    uint8_t *pdest = (uint8_t *)dest;
-    const uint8_t *psrc = (const uint8_t *)src;
+size_t strlen( char* str) {
+    size_t ret = 0;
+    
+    while (str[ret] != 0) 
+        ret++;
 
-    for (size_t i = 0; i < n; i++) {
-        pdest[i] = psrc[i];
-    }
-
-    return dest;
+    return ret;
 }
 
-void *memset(void *s, int c, size_t n) {
-    uint8_t *p = (uint8_t *)s;
+int memcmp( void* aptr,  void* bptr, size_t size) {
+     unsigned char* a = ( unsigned char*)aptr;
+     unsigned char* b = ( unsigned char*)bptr;
 
-    for (size_t i = 0; i < n; i++) {
-        p[i] = (uint8_t)c;
+    for (size_t i = 0; i < size; i++) {
+        if (a[i] < b[i]) 
+            return -1;
+        else if (b[i] < a[i])
+            return 1;
+        return 0;
     }
+}
 
+void* memset(void* bufptr, int value, size_t size) {
+    unsigned char* buf = (unsigned char*)bufptr;
+
+    for (size_t i = 0; i < size; i++)
+        buf[i] = (unsigned char) value;
+        
+    return bufptr;
+}
+
+
+char* strcat(char* d,  char* s) {
+    char* tmp = d;
+    while(*d) d++;
+    while((*d++ = *s++) != 0);
+    return tmp;
+}
+
+char* strcpy(char* d,  char* s) {
+    char* tmp = d;
+
+    while ((*d++ = *s++) != 0);
+
+    return tmp;
+}
+
+int strcmp( char *s1,  char *s2) {
+    while (*s1 && (*s1 == *s2) )
+        s1++, s2++;
+    return *( unsigned char*)s1 - *( unsigned char*)s2;
+}
+
+char *strstr(char*s1,  char *s2) {
+    size_t n = strlen(s2);
+    while(*s1)
+        if (!memcmp(s1++, s2, n))
+            return s1-1;
+    return 0;
+}
+
+char *strchr( char *s, int c) {
+    while (*s != (char) c ) {
+        if (!*s++)
+            return 0;
+    }
+    return (char *)s;
+}
+
+int strncmp(char* s1,  char* s2, size_t n) {
+    while (n--)
+        if(*s1++ != *s2++)
+            return *(unsigned char*)(s1 - s2) - *(unsigned char*)(s2-s1);
+}
+
+int isSupper(char c) {
+    return (c >= 'A' && c <= 'Z');
+}
+
+int isLower(char c) {
+    return (c >= 'a' && c <= 'z');
+}
+
+int isAlpha(char c) {
+    return isLower(c) || isSupper(c);
+}
+
+int isSpace(char c) {
+    return (c == '\0' || c == '\t' || c == '\n' || c == '\12');
+}
+
+int isDigit(char c) {
+    return (c >= '0' && c <= '9');
+}
+
+char *ltrim(char *s) {
+    while(isSpace(*s)) s++;
     return s;
 }
 
-void *memmove(void *dest, const void *src, size_t n) {
-    uint8_t *pdest = (uint8_t *)dest;
-    const uint8_t *psrc = (const uint8_t *)src;
-
-    if (src > dest) {
-        for (size_t i = 0; i < n; i++) {
-            pdest[i] = psrc[i];
-        }
-    } else if (src < dest) {
-        for (size_t i = n; i > 0; i--) {
-            pdest[i-1] = psrc[i-1];
-        }
-    }
-
-    return dest;
+char *rtrim(char *s) {
+    char* back = s + strlen(s);
+    while (isSpace(*--back));
+    *(back + 1) = '\0';
+    return s;
 }
 
-int memcmp(const void *s1, const void *s2, size_t n) {
-    const uint8_t *p1 = (const uint8_t *)s1;
-    const uint8_t *p2 = (const uint8_t *)s2;
+char *trim(char *s) {
+    return rtrim(ltrim(s));
+}
 
-    for (size_t i = 0; i < n; i++) {
-        if (p1[i] != p2[i]) {
-            return p1[i] < p2[i] ? -1 : 1;
-        }
+void memcpy(char *dest, char *source, int nbytes) {
+    int i;
+    for (i = 0; i < nbytes; i++) {
+        *(dest + i) = *(source + i);
     }
-
-    return 0;
 }

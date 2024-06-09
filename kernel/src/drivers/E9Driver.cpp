@@ -7,11 +7,7 @@
 
 e9Driver::e9Driver() { }
 
-void e9Driver::init() {
-#ifdef DEBUG
-    Logger.sucess("inited e9");
-#endif
-}
+void e9Driver::init() {}
 
 void e9Driver::send(char c) {
     IoDriver.outb(0xe9, c);
