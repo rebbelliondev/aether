@@ -2,4 +2,4 @@
 
 - Get isrs working properly
 - Get IDT working properly
-- Starting ata driver
+- Memory managment ([help](https://osdev.miraheze.org/wiki/Setting_Up_Paging))
