@@ -36,5 +36,5 @@ void load_idt(void) {
  
     pic.remap(32, 32 + 7);
 
-    //install_idt((uint64_t)&idt);
+    install_idt((uint64_t)&idt);
 }
