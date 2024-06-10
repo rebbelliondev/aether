@@ -1,12 +1,16 @@
 global load_gdt
 global reloadSegments
 
+gdtr DW 0 ; For limit storage
+     DQ 0 ; For base storage
+ 
 load_gdt:
-    mov rax, rdi
-    lgdt [rax] ; error here
+   mov   [gdtr], di
+   mov   [gdtr+2], rsi
+   lgdt  [gdtr]
 
-    cli
-    ret
+   cli
+   ret
 
 reloadSegments:
     push 0x08
