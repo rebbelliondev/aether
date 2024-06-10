@@ -23,16 +23,18 @@ void registerHandler(int n, uint64_t adr) {
 
 extern "C" void intHandler();
 
+extern "C" void install_idt(uint64_t);
+
 void load_idt(void) {
     idtp.limit = sizeof(idt) - 1;
     idtp.base = (uint64_t)&idt;
-    // Need to add isr common handler to put entries through
-    for (int i = 0; i < 256; i++) {
+
+
+    for (int i = 0; i < 32; i++) {
         set_idt_entry(i, (uint64_t)intHandler);
     }
-    
+ 
     pic.remap(32, 32 + 7);
 
-    asm volatile("lidt (%0)" : : "r" (&idtp));
-    asm volatile("sti");
+    //install_idt((uint64_t)&idt);
 }

@@ -62,10 +62,16 @@ uint64_t descriptor(uint32_t base, uint32_t limit, uint16_t flag) {
                      SEG_PRIV(3)     | SEG_DATA_RDWR
  
 
-extern void load_gdt(uint16_t, uint64_t);
+
+typedef struct {
+	uint16_t size;
+	uint64_t addr;
+} __attribute__((packed)) gdtr_t;
+
+extern void install_gdt(uint64_t);
 extern void reloadSegments();
 
-void init_gdt(void) {
+void load_gdt(void) {
 
     gdt[0] = descriptor(0, 0, 0);
     gdt[1] = descriptor(0, 0x000FFFFF, (GDT_CODE_PL0));
@@ -73,6 +79,10 @@ void init_gdt(void) {
     gdt[3] = descriptor(0, 0x000FFFFF, (GDT_CODE_PL3));
     gdt[4] = descriptor(0, 0x000FFFFF, (GDT_DATA_PL3));
 
-    load_gdt(sizeof(gdt) - 1, (uint64_t)&gdt);
-    reloadSegments();
+    gdtr_t gdtr = {
+        .size = sizeof(gdt) - 1,
+        .addr = (uint64_t)&gdt,
+    };
+
+    install_gdt((uint64_t)&gdtr);
 }

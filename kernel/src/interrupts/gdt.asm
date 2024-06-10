@@ -1,15 +1,10 @@
-global load_gdt
+global install_gdt
 global reloadSegments
 
-gdtr DW 0 ; For limit storage
-     DQ 0 ; For base storage
- 
-load_gdt:
+install_gdt:
    cli
-   
-   mov   [gdtr], di
-   mov   [gdtr+2], rsi
-   lgdt  [gdtr]
+
+   lgdt  [rdi]
 
    ret
 

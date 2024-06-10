@@ -47,12 +47,9 @@ const char* exceptions[32] = {
 extern "C" {
     uint64_t g_ints[256];
 
-    __attribute__((interrupt)) void intHandler(struct interrupt_frame* frame) {
-        if (frame == nullptr) {
-            Logger.error("Null interrupt frame");
-            return;
-        } else {
-            Logger.info("Interrupt");
+    void interrupt_isr() {
+        Logger.error("exception");
+
+        asm volatile("cli; hlt");
     }
-}
 }
