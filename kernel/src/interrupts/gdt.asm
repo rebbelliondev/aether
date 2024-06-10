@@ -2,7 +2,8 @@ global load_gdt
 global reloadSegments
 
 load_gdt:
-    lgdt [rdi]
+    mov rax, rdi
+    lgdt [rax] ; error here
 
     cli
     ret

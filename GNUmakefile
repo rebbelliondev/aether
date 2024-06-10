@@ -33,7 +33,7 @@ debug: $(IMAGE_NAME).iso
 
 .PHONY: run-log
 run-log: $(IMAGE_NAME).iso
-	@qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d -debugcon stdio -d int -D log -no-reboot
+	@qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d -debugcon stdio -d int -D log -no-reboot -M smm=off
 
 .PHONY: run-uefi
 run-uefi: ovmf $(IMAGE_NAME).iso
