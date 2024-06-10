@@ -3,7 +3,10 @@
 #include <drivers/GraphicsDriver.hpp>
 
 extern "C" {
+    #include "interrupts/gdt.h"
+
     void init() {
+        load_gdt();
         load_idt();
         //graphics.init();
         Logger.info("Inited kernl");

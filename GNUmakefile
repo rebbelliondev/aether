@@ -25,7 +25,7 @@ all-hdd: $(IMAGE_NAME).hdd
 
 .PHONY: run
 run: $(IMAGE_NAME).iso
-	@qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d  -debugcon stdio -no-reboot
+	@qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d  -debugcon stdio
 
 .PHONY: debug
 debug: $(IMAGE_NAME).iso
