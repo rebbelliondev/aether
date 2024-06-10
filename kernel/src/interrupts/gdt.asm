@@ -1,14 +1,16 @@
 global load_gdt
+global reloadSegments
 
 load_gdt:
     lgdt [rdi]
-    call reloadSegments
+
+    cli
     ret
 
 reloadSegments:
     push 0x08
     lea rax, [rel .reloadCS]
-    retfq
+    retf
 
 .reloadCS:
     mov ax, 0x10

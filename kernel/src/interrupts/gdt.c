@@ -74,9 +74,9 @@ uint64_t descriptor(uint32_t base, uint32_t limit, uint16_t flag) {
  
 
 extern void load_gdt(uint64_t);
+extern void reloadSegments();
 
 void init_gdt(void) {
-    asm volatile("cli");
 
     gdt[0] = descriptor(0, 0, 0);
     gdt[1] = descriptor(0, 0x000FFFFF, (GDT_CODE_PL0));
@@ -85,6 +85,5 @@ void init_gdt(void) {
     gdt[4] = descriptor(0, 0x000FFFFF, (GDT_DATA_PL3));
 
     load_gdt((uint64_t)&gdtr);
-
-    asm volatile("sti");
+    reloadSegments();
 }
