@@ -16,9 +16,9 @@ static idt_ptr idtp = {
 
 void set_idt_entry(int n, uint64_t handler) {
     idt[n].offset_1 =(uint64_t) handler & 0xFFFF;
-    idt[n].selector = GDT_CODE_PL0;
+    idt[n].selector = // placeholder..... need to figure out;
     idt[n].ist = 0;
-    idt[n].type_attr = 0x8E;
+    idt[n].type_attr = GDT_CODE_PL0;
     idt[n].offset_2 = ((uint64_t)handler >> 16) & 0xFFFF;
     idt[n].offset_3 = ((uint64_t)handler >> 32) & 0xFFFFFFFF;
     idt[n].zero = 0;
@@ -43,3 +43,5 @@ void load_idt(void) {
 
     install_idt((uint64_t)&idtp);
 }
+
+
