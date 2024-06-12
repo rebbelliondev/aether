@@ -53,10 +53,14 @@ void get_memmap() {
     }
 }
 
-// Function to allocate a page
+
+// Inline assembly to halt the CPU
+void halt() {
+    asm volatile ("cli; hlt" : : : "memory");
+}
 void *alloc_page() {
     if (free_pages == NULL) {
-        // Out of memory
+        halt();
         return NULL;
     }
 
@@ -73,6 +77,4 @@ void free_page(void *page) {
 }
 
 // Inline assembly to halt the CPU
-void halt() {
-    asm volatile ("cli; hlt" : : : "memory");
-}
+
