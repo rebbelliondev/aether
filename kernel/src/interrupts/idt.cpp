@@ -24,8 +24,6 @@ void set_idt_entry(int n, uint64_t handler) {
     idt[n].zero = 0;
 }
 
-extern const uint64_t isr_table[256];
-
 void registerHandler(int n, uint64_t adr) {
     //g_ints[n] = adr;
 }
@@ -36,7 +34,7 @@ extern "C" void install_idt(uint64_t);
 
 void load_idt(void) {
     for (int i = 0; i < 256; i++) {
-        set_idt_entry(i, isr_table[i]);
+        set_idt_entry(i, (uint64_t)intHandler);
     }
  
     pic.remap(32, 32 + 7);

@@ -4,6 +4,8 @@
 #include <drivers/GraphicsDriver.hpp>
 
 extern "C" {
+    void initSSE();
+
     #include "interrupts/gdt.h"
 
     void init() {
@@ -12,6 +14,8 @@ extern "C" {
        //  pitTimer.init();
         
         //graphics.init();
+
+        initSSE();
 
         Logger.info("Inited kernl");
     }

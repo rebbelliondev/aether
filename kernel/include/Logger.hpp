@@ -11,6 +11,4 @@ public:
     void failed(char* str);
 };
 
-void debugf(const char* fmt, ...);
-
 extern logger Logger;
