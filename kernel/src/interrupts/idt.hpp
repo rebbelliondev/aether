@@ -12,6 +12,13 @@
     uint32_t zero;
 }__attribute__((packed));
 
+typedef struct REGISTERS {
+    uint64_t int_no, 
+            rax, rbx, rcx, rdx, rsi, rdi, 
+            r8, r9, r10, r11, r12, r13, r14, r15;
+} __attribute__((packed));
+
+typedef void *(ISR)(REGISTERS*);
 
 struct idt_ptr {
     uint16_t limit;
@@ -20,6 +27,6 @@ struct idt_ptr {
 
 void set_idt_entry(int n, uint64_t handler);
 
-void register_handler(int n, uint64_t adr);
+void registerHandler(uint8_t n, uint64_t adr);
 
 void load_idt(void);

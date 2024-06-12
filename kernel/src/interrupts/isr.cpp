@@ -44,29 +44,30 @@ const char* exceptions[32] = {
     "Reserved",
 };
 
-
-typedef struct REGISTERS{
-    uint64_t rax, rbx;
-} __attribute__((packed));
-
-
 #include "LogFmt.hpp"
 
+#include "idt.hpp"
 
 extern "C" {
-    extern REGISTERS regs;
+    ISR* g_ints[256];
 
     void interrupt_isr(REGISTERS* regs) {
-        printf("REGISTERS:\n");
-        printf("rax=0x%x; rbx=0x%x\n", regs->rax, regs->rbx);
 
-        if (regs->rax == 5) {
-            printf("right value");
-            printf("%d", regs->rax);
-        } else {
-            printf("wrong value");
+        if ( regs->int_no < 32 ) {
+            printf("exception: %s\n", exceptions[regs->int_no]);
         }
 
-        asm volatile("cli; hlt");
+        printf("REGISTERS:\n");
+        printf("int 0x%X\n", regs->int_no);
+        printf("rax=0x%x; rbx=0x%x; rcx=0x%x; rdx=0x%x; rsi=0x%x; rdi=0x%x\n", regs->rax, regs->rbx, regs->rcx, regs->rdx, regs->rsi, regs->rdi);
+        printf("r8=%x; r9=%x; r10=%x; r11=%x; r12=%x; r13=%x; r14=%x; r15=%x\n", regs->r8, regs->r9, regs->r10, regs->r11, regs->r12, regs->r13, regs->r14, regs->r15);
+
+        if (regs->int_no > 31 && g_ints[regs->int_no] != nullptr) {
+            g_ints[regs->int_no](regs);
+        }
+
+        if ( regs->int_no < 32 ) {
+            asm volatile("cli; hlt");
+        }
     }
 }

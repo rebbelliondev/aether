@@ -1,6 +1,6 @@
 #include <Logger.hpp>
 #include "interrupts/idt.hpp"
-// #include "PitTimerDriver.hpp"
+#include "interrupts/PitTimerDriver.hpp"
 #include <drivers/GraphicsDriver.hpp>
 
 extern "C" {
@@ -11,7 +11,7 @@ extern "C" {
     void init() {
         load_gdt();
         load_idt();
-       //  pitTimer.init();
+        pit.init();
         
         //graphics.init();
 

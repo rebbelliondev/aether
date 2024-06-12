@@ -14,8 +14,6 @@ typedef struct {
 } timerFunc;
 
 class PitTimerDriver {
-private:
-    void IRQHandler();
 public:
     PitTimerDriver();
 
@@ -25,4 +23,4 @@ public:
     void set_pit_count(uint32_t count);
 };
 
-extern PitTimerDriver pitTimer;
+extern PitTimerDriver pit;

@@ -10,7 +10,7 @@ void Pic8259::eoi(uint8_t irq) {
 };
 
 inline void io_wait() {
-    for (int i = 0; i < 10000000; i++) {
+    for (int i = 0; i < 100000 ; i++) {
         asm volatile("nop");
     }
 }
@@ -51,7 +51,7 @@ void Pic8259::disable() {
     IoDriver.outb(SLAVE_PIC_DATA, 0xff);
 }
 
-void Pic8259::setMask(uint8_t IRQline) {
+void Pic8259::activate(uint8_t IRQline) {
     uint16_t port;
     uint8_t value;
 

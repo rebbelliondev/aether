@@ -17,7 +17,7 @@ public:
 
     void eoi(uint8_t irq);
     void remap(int offset1, int offset2);
-    void setMask(uint8_t IRQline);
+    void activate(uint8_t IRQline);
     void disable();
 };
 
