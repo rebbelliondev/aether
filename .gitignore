@@ -2,4 +2,7 @@
 /ovmf
 *.o
 *.d
+*.iso
+*.sym
+qemu.log
 *.hdd

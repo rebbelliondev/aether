@@ -13,7 +13,20 @@ OR:
 ```
 make run-log
 ```
-for debugging.
+for running qemu with logs.
+
+## Debugging
+To debug aetherOS you need to run:
+```
+make debug
+```
+Then you can connect via gdb:
+```
+make gdb
+```
+
+> Type c to in the gdb console to execute the os
+> ! it is slower than usual
 
 This should make the .iso file and run it.
 

@@ -29,15 +29,21 @@ run: $(IMAGE_NAME).iso
 
 .PHONY: debug
 debug: $(IMAGE_NAME).iso
+	@objcopy --only-keep-debug disk/kernel.elf kernel.sym
+	@objcopy --strip-debug disk/kernel.elf
 	@qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d -debugcon stdio -s -S
+
+.PHONY: gdb
+gdb: 
+	@gdb -tui -ex "target remote localhost:1234" -ex "symbol-file kernel.sym"
 
 .PHONY: run-log
 run-log: $(IMAGE_NAME).iso
-	@qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d -debugcon stdio -d int -D log -no-reboot -M smm=off
+	@qemu-system-x86_64 -M q35 -m 2G -cdrom $(IMAGE_NAME).iso -boot d -debugcon stdio -d int -D qemu.log -no-reboot -M smm=off
 
 .PHONY: run-uefi
 run-uefi: ovmf $(IMAGE_NAME).iso
-	@qemu-system-x86_64 -M q35 -m 2G -bios ovmf/OVMF.fd -cdrom $(IMAGE_NAME).iso -boot d  -debugcon stdio -no-reboot
+	@qemu-system-x86_64 -M q35 -m 2G -bios ovmf/OVMF.fd -cdrom $(IMAGE_NAME).iso -boot d  -debugcon stdio
 
 .PHONY: run-hdd
 run-hdd: $(IMAGE_NAME).hdd
