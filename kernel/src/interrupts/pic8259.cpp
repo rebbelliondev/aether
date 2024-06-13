@@ -63,7 +63,7 @@ void Pic8259::activate(uint8_t IRQline) {
         IRQline -= 8;
     }
 
-    value = IoDriver.inb(port) | ( 1 << IRQline );
+    value = IoDriver.inb(port) & ~( 1 << IRQline );
     IoDriver.outb(port, value);
 }
 

@@ -30,7 +30,7 @@ int_%+ i:
 	push rax
 
 	mov rdi, rsp
-    call interrupt_isr 
+	call interrupt_isr 
 
 	pop rax
 
@@ -55,7 +55,7 @@ int_%+ i:
 
 	sti
 	
-    iret
+	iret
 
 %assign i i + 1
 %endrep
