@@ -1,7 +1,5 @@
-#include "../limine.h"
+#include "limine.h"
 #include <stddef.h>
-#include "../../include/Logger.hpp"
-#include "../Logger.cpp"
 
 // TAKE NOTE THAT THIS IS GOING TO BE CHANGED IN THE FUTURE
 
