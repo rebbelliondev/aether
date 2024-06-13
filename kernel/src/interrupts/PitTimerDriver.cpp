@@ -19,16 +19,21 @@ void PitTimerDriver::init() {
     IoDriver.outb(PIT_CMD, 0b00110110); // Square wave mode
     this->set_pit_count(10000); //100 KHz (each 1us)
 
-    pic.activate(0);
     registerHandler(32, (uint64_t)pit_irq_handler);
+    pic.activate(0);
 
 }
 
-void PitTimerDriver::set_pit_count(uint32_t count) {
+void PitTimerDriver::set_pit_count(uint16_t count) {
     asm volatile("cli");
 
+    uint16_t ct = 1193180 / count;
+
+    IoDriver.outb(PIT_CMD, 0x36);
     IoDriver.outb(PIT_CHANNEL_0_DATA, count & 0xFF);
-    IoDriver.outb(PIT_CHANNEL_0_DATA, (count && 0xFF00) >> 8);
+    IoDriver.outb(PIT_CHANNEL_0_DATA, count >> 8);
+
+    asm volatile("sti");
 }
 
 timerFunc functions[MAX_TIMER_FUNCTIONS];

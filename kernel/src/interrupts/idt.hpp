@@ -27,6 +27,6 @@ struct idt_ptr {
 
 void set_idt_entry(int n, uint64_t handler);
 
-void registerHandler(uint8_t n, uint64_t adr);
+void registerHandler(int n, uint64_t adr);
 
 void load_idt(void);

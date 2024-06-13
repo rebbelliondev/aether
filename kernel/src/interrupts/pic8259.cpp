@@ -22,9 +22,9 @@ void Pic8259::remap(int offset1, int offset2) {
     uint8_t a1 = IoDriver.inb(MASTER_PIC_DATA);
     uint8_t a2 = IoDriver.inb(SLAVE_PIC_DATA);
 
-    IoDriver.outb(MASTER_PIC_CMD, 0x10 | 0x01);
+    IoDriver.outb(MASTER_PIC_CMD, 0x11);
     io_wait();
-    IoDriver.outb(SLAVE_PIC_CMD, 0x10 | 0x01);
+    IoDriver.outb(SLAVE_PIC_CMD, 0x11);
     io_wait();
 
     IoDriver.outb(MASTER_PIC_DATA,  offset1);
@@ -52,6 +52,7 @@ void Pic8259::disable() {
 }
 
 void Pic8259::activate(uint8_t IRQline) {
+
     uint16_t port;
     uint8_t value;
 

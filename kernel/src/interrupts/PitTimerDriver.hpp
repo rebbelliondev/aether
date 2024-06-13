@@ -20,7 +20,7 @@ public:
     void registerTimerFunction(timerFunc func);
 
     void init();
-    void set_pit_count(uint32_t count);
+    void set_pit_count(uint16_t count);
 };
 
 extern PitTimerDriver pit;

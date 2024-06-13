@@ -25,8 +25,10 @@ void set_idt_entry(int n, uint64_t handler) {
 }
 
 extern "C" uint64_t g_ints[256];
-void registerHandler(uint8_t n, uint64_t adr) { // uint8_t so it's always a valid array adress (uint8_t::MAX = 256)
-    g_ints[n] = adr;
+void registerHandler(int n, uint64_t adr) {
+    if (n < 256) {
+        g_ints[n] = adr;
+    }
 }
 
 extern const uint64_t isr_table[256];
