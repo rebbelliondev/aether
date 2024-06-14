@@ -2,6 +2,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "limine.h"
+#include "mem/pagealloc.cpp"
+#include "mem/paging.c"
 
 __attribute__((used, section(".requests")))
 static volatile LIMINE_BASE_REVISION(2);
@@ -27,6 +29,8 @@ void _start(void) {
 
     init();
     krnl();
+  // PAGING IS READY, I used a teeny bit of chatgpt to speed it up (sorry!!!) I promise I won't use chatgpt from now on (we need implementation of the virtual memory)
+
 
     hcf();
 }
