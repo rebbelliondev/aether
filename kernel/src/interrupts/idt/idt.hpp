@@ -24,9 +24,3 @@ struct idt_ptr {
     uint16_t limit;
     uint64_t base;
 }__attribute__((packed));
-
-void set_idt_entry(int n, uint64_t handler);
-
-void registerHandler(int n, uint64_t adr);
-
-void load_idt(void);

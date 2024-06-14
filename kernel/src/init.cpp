@@ -1,17 +1,18 @@
 #include <Logger.hpp>
-#include "interrupts/idt.hpp"
-#include "interrupts/PitTimerDriver.hpp"
 #include <drivers/GraphicsDriver.hpp>
+#include "interrupts/IntDriver.hpp"
 
 extern "C" {
     void initSSE();
 
-    #include "interrupts/gdt.h"
+    #include "mem/paging.h"
 
     void init() {
-        load_gdt();
-        load_idt();
-        pit.init();
+        IntDrivr.init();
+        IntDrivr.activate(INT_FEATURE::Pic8259);
+        IntDrivr.activate(INT_FEATURE::PitTimer);
+
+        enable_paging();
         
         //graphics.init();
 

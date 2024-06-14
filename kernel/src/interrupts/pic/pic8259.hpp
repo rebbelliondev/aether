@@ -12,7 +12,6 @@
 
 class Pic8259 {
 public:
-
     Pic8259();
 
     void eoi(uint8_t irq);

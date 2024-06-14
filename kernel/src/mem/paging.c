@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include "paging.h"
+
 // Constants
 #define PAGE_SIZE 4096
 #define PML4_SHIFT 39
@@ -18,12 +20,6 @@
 #define USER    0x4
 
 // Page table entry type
-typedef uint64_t pt_entry_t;
-
-// Page table structure
-typedef struct page_table {
-    pt_entry_t entries[512];
-} page_table_t;
 
 // Allocate a page table (assuming you have a page allocator)
 page_table_t *alloc_page_table() {

@@ -1,5 +1,6 @@
 #include "limine.h"
 #include <stddef.h>
+#include "paging.h"
 
 // TAKE NOTE THAT THIS IS GOING TO BE CHANGED IN THE FUTURE
 
@@ -7,10 +8,7 @@ static struct limine_memmap_request mem_mapget = {
     .id = LIMINE_MEMMAP_REQUEST,
     .revision = 2
 };
-typedef struct page {
-    struct page *next;
-} page_t;
-#define page_size 4096
+
 static page_t *free_pages = NULL;
 
 void get_memmap() {

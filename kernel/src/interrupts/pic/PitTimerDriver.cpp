@@ -1,6 +1,6 @@
 #include "PitTimerDriver.hpp"
 #include "pic8259.hpp"
-#include "idt.hpp"
+#include "../IntDriver.hpp"
 
 
 #include <Logger.hpp>
@@ -19,7 +19,7 @@ void PitTimerDriver::init() {
     IoDriver.outb(PIT_CMD, 0b00110110); // Square wave mode
     this->set_pit_count(10000); //100 KHz (each 1us)
 
-    registerHandler(32, (uint64_t)pit_irq_handler);
+    IntDrivr.setHandler(32, (uint64_t)pit_irq_handler);
     pic.activate(0);
 
 }
