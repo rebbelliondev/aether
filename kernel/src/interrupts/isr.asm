@@ -6,8 +6,6 @@ extern interrupt_isr
 %assign i 0
 %rep 256
 int_%+ i:
-	cli
-
 	push rsp
 
 	push r15
@@ -17,7 +15,6 @@ int_%+ i:
 	push r11
 	push r10
 	push r9
-	push r8
 	push r8
 	push rdi
 	push rsi
@@ -33,27 +30,22 @@ int_%+ i:
 	call interrupt_isr 
 
 	pop rax
-
-
-	pop r15
-	pop r14
-	pop r13
-	pop r12
-	pop r11
-	pop r10
-	pop r9
-	pop r8
-	pop r8
-	pop rdi
-	pop rsi
-	pop rdx
-	pop rcx
-	pop rbx
 	pop rax
+	pop rbx
+	pop rcx
+	pop rdx
+	pop rsi
+	pop rdi
+	pop r8
+	pop r9
+	pop r10
+	pop r11
+	pop r12
+	pop r13
+	pop r14
+	pop r15
 
 	pop rsp
-
-	sti
 	
 	iret
 
