@@ -1,5 +1,9 @@
 #include "IntDriver.hpp"
 #include "idt/idt.hpp"
+
+#include "pic/Pic8259.hpp"
+#include "pic/PitTimerDriver.hpp"
+
 extern "C" {
     #include "gdt/gdt.h"
 }
@@ -36,9 +40,6 @@ void IntDriver::init() {
 
     install_idt((uint64_t)&idtp);
 }
-
-#include "pic/pic8259.hpp"
-#include "pic/PitTimerDriver.hpp"
 
 void IntDriver::activate(INT_FEATURE feature) {
     switch ( feature ) {

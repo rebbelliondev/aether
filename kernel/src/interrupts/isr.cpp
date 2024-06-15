@@ -46,7 +46,7 @@ const char* exceptions[32] = {
 
 #include "LogFmt.hpp"
 
-#include "idt.hpp"
+#include "idt/idt.hpp"
 
 extern "C" {
     ISR* g_ints[256];

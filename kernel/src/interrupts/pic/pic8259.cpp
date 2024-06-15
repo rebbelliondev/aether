@@ -1,7 +1,7 @@
 #include "pic8259.hpp"
 #include <drivers/IoDriver.hpp>
 
-void Pic8259::eoi(uint8_t irq) {
+void pic8259::eoi(uint8_t irq) {
     if (irq >= 8) {
         IoDriver.outb(SLAVE_PIC_CMD, PIC_EOI);
     }
@@ -16,9 +16,9 @@ inline void io_wait() {
 }
 
 
-Pic8259::Pic8259() { }
+pic8259::pic8259() { }
 
-void Pic8259::remap(int offset1, int offset2) {
+void pic8259::remap(int offset1, int offset2) {
     uint8_t a1 = IoDriver.inb(MASTER_PIC_DATA);
     uint8_t a2 = IoDriver.inb(SLAVE_PIC_DATA);
 
@@ -46,12 +46,12 @@ void Pic8259::remap(int offset1, int offset2) {
     IoDriver.outb(SLAVE_PIC_DATA, a2);
 }
 
-void Pic8259::disable() {
+void pic8259::disable() {
     IoDriver.outb(MASTER_PIC_DATA, 0xff);
     IoDriver.outb(SLAVE_PIC_DATA, 0xff);
 }
 
-void Pic8259::activate(uint8_t IRQline) {
+void pic8259::activate(uint8_t IRQline) {
 
     uint16_t port;
     uint8_t value;
@@ -67,4 +67,4 @@ void Pic8259::activate(uint8_t IRQline) {
     IoDriver.outb(port, value);
 }
 
-extern Pic8259 pic = Pic8259();
+extern pic8259 pic = pic8259();

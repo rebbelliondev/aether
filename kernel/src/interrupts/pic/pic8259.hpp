@@ -10,9 +10,9 @@
 
 #define PIC_EOI 0x20
 
-class Pic8259 {
+class pic8259 {
 public:
-    Pic8259();
+    pic8259();
 
     void eoi(uint8_t irq);
     void remap(int offset1, int offset2);
@@ -20,4 +20,4 @@ public:
     void disable();
 };
 
-extern Pic8259 pic;
+extern pic8259 pic;
